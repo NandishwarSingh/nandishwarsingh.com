@@ -5,9 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta http-equiv="x-dns-prefetch-control" content="on">
-    <meta name="color-scheme" content="dark light">
-    <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme:dark)">
-    <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme:light)">
+    <meta name="color-scheme" content="dark">
+    <meta name="theme-color" content="#0a0a0a">
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
     <link rel="preconnect" href="https://github.com">
@@ -371,103 +370,6 @@
 
             .tools {
                 gap: .5rem
-            }
-        }
-
-        @media(prefers-color-scheme:light) {
-
-            html,
-            body {
-                background: #fff
-            }
-
-            body {
-                color: #111
-            }
-
-            .name {
-                color: #000
-            }
-
-            .name::before {
-                text-shadow: -2px 0 #fff
-            }
-
-            .name::after {
-                text-shadow: 2px 0 #fff
-            }
-
-            .role {
-                color: #666
-            }
-
-            .bio {
-                color: #333;
-                border-color: #000
-            }
-
-            h2 {
-                color: #888
-            }
-
-            h2::after {
-                background: linear-gradient(90deg, #ccc, transparent)
-            }
-
-            .project,
-            .exp {
-                background: #fff;
-                border-color: #e0e0e0
-            }
-
-            .project:hover,
-            .exp:hover {
-                border-color: #000
-            }
-
-            .project::before,
-            .exp::before {
-                background: #000
-            }
-
-            .project h3,
-            .exp h3 {
-                color: #000
-            }
-
-            .project p,
-            .exp p {
-                color: #666
-            }
-
-            .exp .period {
-                color: #888
-            }
-
-            .tool {
-                border-color: #e0e0e0;
-                color: #111
-            }
-
-            .tool:hover {
-                border-color: #000
-            }
-
-            a {
-                color: #000
-            }
-
-            .footer {
-                border-color: #eee;
-                color: #999
-            }
-
-            .status::before {
-                background: #000
-            }
-
-            body::before {
-                background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, .03) 2px, rgba(0, 0, 0, .03) 4px)
             }
         }
     </style>
