@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="en" style="background:#fff">
+<html lang="en" style="background:#0a0a0a">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta http-equiv="x-dns-prefetch-control" content="on">
-    <meta name="color-scheme" content="light dark">
-    <meta name="theme-color" content="#000" media="(prefers-color-scheme:dark)">
-    <meta name="theme-color" content="#fff" media="(prefers-color-scheme:light)">
+    <meta name="color-scheme" content="dark light">
+    <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme:dark)">
+    <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme:light)">
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
     <link rel="preconnect" href="https://github.com">
@@ -33,7 +33,6 @@
         type="speculationrules">{"prerender":[{"where":{"href_matches":"/*"},"eagerness":"moderate"}],"prefetch":[{"where":{"selector_matches":"a"},"eagerness":"immediate"}]}</script>
     <script
         type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://nandishwarsingh.com/#website","url":"https://nandishwarsingh.com","name":"Nandishwar Singh","publisher":{"@id":"https://nandishwarsingh.com/#person"}},{"@type":"Person","@id":"https://nandishwarsingh.com/#person","name":"Nandishwar Singh","url":"https://nandishwarsingh.com","jobTitle":"Developer","sameAs":["https://github.com/nandishwarsingh"]}]}</script>
-    <script>const t = localStorage.getItem('theme'); if (t === 'dark' || (t !== 'light' && matchMedia('(prefers-color-scheme:dark)').matches)) document.documentElement.classList.add('dark')</script>
     <style>
         @keyframes glitch {
 
@@ -92,19 +91,13 @@
         html {
             font-size: 17px;
             -webkit-text-size-adjust: 100%;
-            scroll-behavior: auto;
-            background: #fff;
-            transition: background .3s
-        }
-
-        html.dark {
-            background: #0a0a0a
+            scroll-behavior: auto
         }
 
         body {
             font-family: system-ui, -apple-system, sans-serif;
-            background: inherit;
-            color: #111;
+            background: #0a0a0a;
+            color: #eee;
             line-height: 1.7;
             min-height: 100dvh;
             padding: 3rem 2rem;
@@ -112,8 +105,7 @@
             -webkit-font-smoothing: antialiased;
             contain: layout style paint;
             position: relative;
-            overflow-x: hidden;
-            transition: color .3s, background .3s
+            overflow-x: hidden
         }
 
         body::before {
@@ -123,7 +115,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, .03) 2px, rgba(0, 0, 0, .03) 4px);
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255, 255, 255, .02) 2px, rgba(255, 255, 255, .02) 4px);
             pointer-events: none;
             z-index: 1000
         }
@@ -135,42 +127,7 @@
         }
 
         header {
-            margin-bottom: 3rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start
-        }
-
-        .header-left {
-            flex: 1
-        }
-
-        .theme-toggle {
-            background: none;
-            border: 1px solid #e0e0e0;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 1.2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all .2s;
-            touch-action: manipulation
-        }
-
-        .theme-toggle:hover {
-            border-color: #000;
-            transform: scale(1.1)
-        }
-
-        .theme-toggle .sun {
-            display: block
-        }
-
-        .theme-toggle .moon {
-            display: none
+            margin-bottom: 3rem
         }
 
         .name {
@@ -180,7 +137,8 @@
             line-height: 1;
             margin-bottom: .5rem;
             position: relative;
-            display: inline-block
+            display: inline-block;
+            color: #fff
         }
 
         .name::before,
@@ -195,14 +153,14 @@
 
         .name::before {
             left: 2px;
-            text-shadow: -2px 0 #fff;
+            text-shadow: -2px 0 #0a0a0a;
             clip-path: inset(40% 0 61% 0);
             animation: glitch 2.5s infinite linear alternate-reverse
         }
 
         .name::after {
             left: -2px;
-            text-shadow: 2px 0 #fff;
+            text-shadow: 2px 0 #0a0a0a;
             clip-path: inset(25% 0 58% 0);
             animation: glitch 3s infinite linear alternate-reverse
         }
@@ -210,7 +168,7 @@
         .role {
             font-size: 1rem;
             font-weight: 400;
-            color: #666;
+            color: #888;
             font-family: monospace;
             letter-spacing: .1em;
             text-transform: uppercase
@@ -223,10 +181,10 @@
 
         .bio {
             font-size: 1.1rem;
-            color: #333;
+            color: #aaa;
             margin: 2rem 0;
             max-width: 500px;
-            border-left: 3px solid #000;
+            border-left: 3px solid #fff;
             padding-left: 1rem
         }
 
@@ -239,7 +197,7 @@
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: .15em;
-            color: #888;
+            color: #666;
             margin-bottom: 1.5rem;
             display: flex;
             align-items: center;
@@ -250,26 +208,27 @@
             content: '';
             flex: 1;
             height: 1px;
-            background: linear-gradient(90deg, #ccc, transparent)
+            background: linear-gradient(90deg, #333, transparent)
         }
 
-        .projects {
+        .projects,
+        .experiences {
             display: grid;
             gap: 1rem
         }
 
         .project,
         .exp {
-            border: 1px solid #e0e0e0;
+            border: 1px solid #222;
             padding: 1.25rem;
             position: relative;
             transition: all .2s ease;
-            background: #fff
+            background: #111
         }
 
         .project:hover,
         .exp:hover {
-            border-color: #000;
+            border-color: #fff;
             transform: translateX(4px)
         }
 
@@ -281,7 +240,7 @@
             left: 0;
             width: 3px;
             height: 100%;
-            background: #000;
+            background: #fff;
             transform: scaleY(0);
             transition: transform .2s ease;
             transform-origin: bottom
@@ -297,18 +256,19 @@
         .exp h3 {
             font-size: 1rem;
             font-weight: 600;
-            margin-bottom: .25rem
+            margin-bottom: .25rem;
+            color: #fff
         }
 
         .project p,
         .exp p {
             font-size: .9rem;
-            color: #666
+            color: #888
         }
 
         .exp .period {
             font-size: .75rem;
-            color: #888;
+            color: #666;
             font-family: monospace;
             margin-bottom: .5rem
         }
@@ -316,11 +276,6 @@
         .project a {
             position: absolute;
             inset: 0
-        }
-
-        .experiences {
-            display: grid;
-            gap: 1rem
         }
 
         .tools {
@@ -333,12 +288,13 @@
             font-family: monospace;
             font-size: .85rem;
             padding: .4rem .75rem;
-            border: 1px solid #e0e0e0;
-            transition: all .15s
+            border: 1px solid #333;
+            transition: all .15s;
+            color: #eee
         }
 
         .tool:hover {
-            border-color: #000;
+            border-color: #fff;
             transform: translateY(-2px)
         }
 
@@ -350,7 +306,7 @@
         }
 
         a {
-            color: #000;
+            color: #fff;
             text-decoration: none;
             font-weight: 500;
             font-size: .95rem;
@@ -373,9 +329,9 @@
         .footer {
             margin-top: 4rem;
             padding-top: 2rem;
-            border-top: 1px solid #eee;
+            border-top: 1px solid #222;
             font-size: .8rem;
-            color: #999;
+            color: #555;
             display: flex;
             justify-content: space-between;
             align-items: center
@@ -391,7 +347,7 @@
             content: '';
             width: 8px;
             height: 8px;
-            background: #000;
+            background: #fff;
             border-radius: 50%;
             animation: float 2s ease-in-out infinite
         }
@@ -418,99 +374,101 @@
             }
         }
 
-        html.dark body {
-            color: #eee
-        }
+        @media(prefers-color-scheme:light) {
 
-        html.dark .name::before {
-            text-shadow: -2px 0 #0a0a0a
-        }
+            html,
+            body {
+                background: #fff
+            }
 
-        html.dark .name::after {
-            text-shadow: 2px 0 #0a0a0a
-        }
+            body {
+                color: #111
+            }
 
-        html.dark .role {
-            color: #888
-        }
+            .name {
+                color: #000
+            }
 
-        html.dark .bio {
-            color: #aaa;
-            border-color: #fff
-        }
+            .name::before {
+                text-shadow: -2px 0 #fff
+            }
 
-        html.dark h2 {
-            color: #666
-        }
+            .name::after {
+                text-shadow: 2px 0 #fff
+            }
 
-        html.dark h2::after {
-            background: linear-gradient(90deg, #333, transparent)
-        }
+            .role {
+                color: #666
+            }
 
-        html.dark .project,
-        html.dark .exp {
-            background: #111;
-            border-color: #222
-        }
+            .bio {
+                color: #333;
+                border-color: #000
+            }
 
-        html.dark .project:hover,
-        html.dark .exp:hover {
-            border-color: #fff
-        }
+            h2 {
+                color: #888
+            }
 
-        html.dark .project::before,
-        html.dark .exp::before {
-            background: #fff
-        }
+            h2::after {
+                background: linear-gradient(90deg, #ccc, transparent)
+            }
 
-        html.dark .project p,
-        html.dark .exp p {
-            color: #888
-        }
+            .project,
+            .exp {
+                background: #fff;
+                border-color: #e0e0e0
+            }
 
-        html.dark .exp .period {
-            color: #666
-        }
+            .project:hover,
+            .exp:hover {
+                border-color: #000
+            }
 
-        html.dark .tool {
-            border-color: #333
-        }
+            .project::before,
+            .exp::before {
+                background: #000
+            }
 
-        html.dark .tool:hover {
-            border-color: #fff
-        }
+            .project h3,
+            .exp h3 {
+                color: #000
+            }
 
-        html.dark a {
-            color: #fff
-        }
+            .project p,
+            .exp p {
+                color: #666
+            }
 
-        html.dark .footer {
-            border-color: #222;
-            color: #555
-        }
+            .exp .period {
+                color: #888
+            }
 
-        html.dark .status::before {
-            background: #fff
-        }
+            .tool {
+                border-color: #e0e0e0;
+                color: #111
+            }
 
-        html.dark body::before {
-            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255, 255, 255, .02) 2px, rgba(255, 255, 255, .02) 4px)
-        }
+            .tool:hover {
+                border-color: #000
+            }
 
-        html.dark .theme-toggle {
-            border-color: #333
-        }
+            a {
+                color: #000
+            }
 
-        html.dark .theme-toggle:hover {
-            border-color: #fff
-        }
+            .footer {
+                border-color: #eee;
+                color: #999
+            }
 
-        html.dark .theme-toggle .sun {
-            display: none
-        }
+            .status::before {
+                background: #000
+            }
 
-        html.dark .theme-toggle .moon {
-            display: block
+            body::before {
+                background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, .03) 2px, rgba(0, 0, 0, .03) 4px)
+            }
         }
     </style>
 </head>
@@ -518,11 +476,8 @@
 <body>
     <div class="container">
         <header>
-            <div class="header-left">
-                <h1 class="name" data-text="Nandishwar Singh">Nandishwar Singh</h1>
-                <p class="role">Developer</p>
-            </div><button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode"><span
-                    class="sun">☀️</span><span class="moon">🌙</span></button>
+            <h1 class="name" data-text="Nandishwar Singh">Nandishwar Singh</h1>
+            <p class="role">Developer</p>
         </header>
         <p class="bio">Building things on the internet. Systems, web, and everything that compiles.</p>
         <section>
@@ -571,7 +526,6 @@
                 href="mailto:hello@nandishwarsingh.com">Email</a></nav>
         <footer class="footer"><span class="status">Building something new</span><span>© 2025</span></footer>
     </div>
-    <script>document.getElementById('themeToggle').onclick = () => { document.documentElement.classList.toggle('dark'); localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light') }</script>
 </body>
 
 </html>
