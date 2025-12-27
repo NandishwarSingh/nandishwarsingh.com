@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en" style="background:#fff">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta http-equiv="x-dns-prefetch-control" content="on">
+    <meta name="color-scheme" content="light dark">
+    <meta name="theme-color" content="#000" media="(prefers-color-scheme:dark)">
+    <meta name="theme-color" content="#fff" media="(prefers-color-scheme:light)">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+    <link rel="preconnect" href="https://github.com">
+    <link rel="dns-prefetch" href="//github.com">
+    <title>Nandishwar Singh - Developer</title>
+    <meta name="title" content="Nandishwar Singh - Developer">
+    <meta name="description"
+        content="Nandishwar Singh is a developer building things on the internet. Code, design, and everything in between.">
+    <meta name="author" content="Nandishwar Singh">
+    <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
+    <meta name="googlebot" content="index,follow">
+    <link rel="canonical" href="https://nandishwarsingh.com/">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://nandishwarsingh.com/">
+    <meta property="og:title" content="Nandishwar Singh - Developer">
+    <meta property="og:description" content="Nandishwar Singh is a developer building things on the internet.">
+    <meta property="og:site_name" content="Nandishwar Singh">
+    <meta property="og:locale" content="en_US">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Nandishwar Singh - Developer">
+    <meta name="twitter:description" content="Nandishwar Singh is a developer building things on the internet.">
+    <script
+        type="speculationrules">{"prerender":[{"where":{"href_matches":"/*"},"eagerness":"moderate"}],"prefetch":[{"where":{"selector_matches":"a"},"eagerness":"immediate"}]}</script>
+    <script
+        type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://nandishwarsingh.com/#website","url":"https://nandishwarsingh.com","name":"Nandishwar Singh","publisher":{"@id":"https://nandishwarsingh.com/#person"}},{"@type":"Person","@id":"https://nandishwarsingh.com/#person","name":"Nandishwar Singh","url":"https://nandishwarsingh.com","jobTitle":"Developer","sameAs":["https://github.com/nandishwarsingh"]}]}</script>
+    <script>const t = localStorage.getItem('theme'); if (t === 'dark' || (t !== 'light' && matchMedia('(prefers-color-scheme:dark)').matches)) document.documentElement.classList.add('dark')</script>
+    <style>
+        @keyframes glitch {
+
+            0%,
+            100% {
+                clip-path: inset(40% 0 61% 0)
+            }
+
+            20% {
+                clip-path: inset(92% 0 1% 0)
+            }
+
+            40% {
+                clip-path: inset(43% 0 1% 0)
+            }
+
+            60% {
+                clip-path: inset(25% 0 58% 0)
+            }
+
+            80% {
+                clip-path: inset(54% 0 7% 0)
+            }
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1
+            }
+
+            50% {
+                opacity: 0
+            }
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0)
+            }
+
+            50% {
+                transform: translateY(-5px)
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        html {
+            font-size: 17px;
+            -webkit-text-size-adjust: 100%;
+            scroll-behavior: auto;
+            background: #fff;
+            transition: background .3s
+        }
+
+        html.dark {
+            background: #0a0a0a
+        }
+
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: inherit;
+            color: #111;
+            line-height: 1.7;
+            min-height: 100dvh;
+            padding: 3rem 2rem;
+            text-rendering: optimizeSpeed;
+            -webkit-font-smoothing: antialiased;
+            contain: layout style paint;
+            position: relative;
+            overflow-x: hidden;
+            transition: color .3s, background .3s
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, .03) 2px, rgba(0, 0, 0, .03) 4px);
+            pointer-events: none;
+            z-index: 1000
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            position: relative
+        }
+
+        header {
+            margin-bottom: 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start
+        }
+
+        .header-left {
+            flex: 1
+        }
+
+        .theme-toggle {
+            background: none;
+            border: 1px solid #e0e0e0;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all .2s;
+            touch-action: manipulation
+        }
+
+        .theme-toggle:hover {
+            border-color: #000;
+            transform: scale(1.1)
+        }
+
+        .theme-toggle .sun {
+            display: block
+        }
+
+        .theme-toggle .moon {
+            display: none
+        }
+
+        .name {
+            font-size: 3.5rem;
+            font-weight: 900;
+            letter-spacing: -.04em;
+            line-height: 1;
+            margin-bottom: .5rem;
+            position: relative;
+            display: inline-block
+        }
+
+        .name::before,
+        .name::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%
+        }
+
+        .name::before {
+            left: 2px;
+            text-shadow: -2px 0 #fff;
+            clip-path: inset(40% 0 61% 0);
+            animation: glitch 2.5s infinite linear alternate-reverse
+        }
+
+        .name::after {
+            left: -2px;
+            text-shadow: 2px 0 #fff;
+            clip-path: inset(25% 0 58% 0);
+            animation: glitch 3s infinite linear alternate-reverse
+        }
+
+        .role {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+            font-family: monospace;
+            letter-spacing: .1em;
+            text-transform: uppercase
+        }
+
+        .role::after {
+            content: '_';
+            animation: blink 1s infinite
+        }
+
+        .bio {
+            font-size: 1.1rem;
+            color: #333;
+            margin: 2rem 0;
+            max-width: 500px;
+            border-left: 3px solid #000;
+            padding-left: 1rem
+        }
+
+        section {
+            margin: 3rem 0
+        }
+
+        h2 {
+            font-size: .85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .15em;
+            color: #888;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: .5rem
+        }
+
+        h2::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, #ccc, transparent)
+        }
+
+        .projects {
+            display: grid;
+            gap: 1rem
+        }
+
+        .project,
+        .exp {
+            border: 1px solid #e0e0e0;
+            padding: 1.25rem;
+            position: relative;
+            transition: all .2s ease;
+            background: #fff
+        }
+
+        .project:hover,
+        .exp:hover {
+            border-color: #000;
+            transform: translateX(4px)
+        }
+
+        .project::before,
+        .exp::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 100%;
+            background: #000;
+            transform: scaleY(0);
+            transition: transform .2s ease;
+            transform-origin: bottom
+        }
+
+        .project:hover::before,
+        .exp:hover::before {
+            transform: scaleY(1);
+            transform-origin: top
+        }
+
+        .project h3,
+        .exp h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: .25rem
+        }
+
+        .project p,
+        .exp p {
+            font-size: .9rem;
+            color: #666
+        }
+
+        .exp .period {
+            font-size: .75rem;
+            color: #888;
+            font-family: monospace;
+            margin-bottom: .5rem
+        }
+
+        .project a {
+            position: absolute;
+            inset: 0
+        }
+
+        .experiences {
+            display: grid;
+            gap: 1rem
+        }
+
+        .tools {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .75rem
+        }
+
+        .tool {
+            font-family: monospace;
+            font-size: .85rem;
+            padding: .4rem .75rem;
+            border: 1px solid #e0e0e0;
+            transition: all .15s
+        }
+
+        .tool:hover {
+            border-color: #000;
+            transform: translateY(-2px)
+        }
+
+        nav {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin-top: 3rem
+        }
+
+        a {
+            color: #000;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: .95rem;
+            position: relative;
+            touch-action: manipulation;
+            will-change: transform
+        }
+
+        a:not(.project a)::after {
+            content: '→';
+            margin-left: .25rem;
+            display: inline-block;
+            transition: transform .2s
+        }
+
+        a:not(.project a):hover::after {
+            transform: translateX(4px)
+        }
+
+        .footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid #eee;
+            font-size: .8rem;
+            color: #999;
+            display: flex;
+            justify-content: space-between;
+            align-items: center
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: .5rem
+        }
+
+        .status::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: #000;
+            border-radius: 50%;
+            animation: float 2s ease-in-out infinite
+        }
+
+        @media(max-width:600px) {
+            html {
+                font-size: 15px
+            }
+
+            .name {
+                font-size: 2.5rem
+            }
+
+            body {
+                padding: 2rem 1.25rem
+            }
+
+            nav {
+                gap: 1.5rem
+            }
+
+            .tools {
+                gap: .5rem
+            }
+        }
+
+        html.dark body {
+            color: #eee
+        }
+
+        html.dark .name::before {
+            text-shadow: -2px 0 #0a0a0a
+        }
+
+        html.dark .name::after {
+            text-shadow: 2px 0 #0a0a0a
+        }
+
+        html.dark .role {
+            color: #888
+        }
+
+        html.dark .bio {
+            color: #aaa;
+            border-color: #fff
+        }
+
+        html.dark h2 {
+            color: #666
+        }
+
+        html.dark h2::after {
+            background: linear-gradient(90deg, #333, transparent)
+        }
+
+        html.dark .project,
+        html.dark .exp {
+            background: #111;
+            border-color: #222
+        }
+
+        html.dark .project:hover,
+        html.dark .exp:hover {
+            border-color: #fff
+        }
+
+        html.dark .project::before,
+        html.dark .exp::before {
+            background: #fff
+        }
+
+        html.dark .project p,
+        html.dark .exp p {
+            color: #888
+        }
+
+        html.dark .exp .period {
+            color: #666
+        }
+
+        html.dark .tool {
+            border-color: #333
+        }
+
+        html.dark .tool:hover {
+            border-color: #fff
+        }
+
+        html.dark a {
+            color: #fff
+        }
+
+        html.dark .footer {
+            border-color: #222;
+            color: #555
+        }
+
+        html.dark .status::before {
+            background: #fff
+        }
+
+        html.dark body::before {
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255, 255, 255, .02) 2px, rgba(255, 255, 255, .02) 4px)
+        }
+
+        html.dark .theme-toggle {
+            border-color: #333
+        }
+
+        html.dark .theme-toggle:hover {
+            border-color: #fff
+        }
+
+        html.dark .theme-toggle .sun {
+            display: none
+        }
+
+        html.dark .theme-toggle .moon {
+            display: block
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div class="header-left">
+                <h1 class="name" data-text="Nandishwar Singh">Nandishwar Singh</h1>
+                <p class="role">Developer</p>
+            </div><button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode"><span
+                    class="sun">☀️</span><span class="moon">🌙</span></button>
+        </header>
+        <p class="bio">Building things on the internet. Systems, web, and everything that compiles.</p>
+        <section>
+            <h2>Experience</h2>
+            <div class="experiences">
+                <div class="exp">
+                    <div class="period">2024 - Present</div>
+                    <h3>Senior Developer @ TechCorp</h3>
+                    <p>Building distributed systems and ML pipelines</p>
+                </div>
+                <div class="exp">
+                    <div class="period">2022 - 2024</div>
+                    <h3>Full Stack Developer @ StartupXYZ</h3>
+                    <p>Led development of core platform using MERN stack</p>
+                </div>
+            </div>
+        </section>
+        <section>
+            <h2>Projects</h2>
+            <div class="projects">
+                <div class="project">
+                    <h3>Neural Style Transfer</h3>
+                    <p>Real-time artistic style transfer using PyTorch</p><a
+                        href="https://github.com/nandishwarsingh/neural-style"
+                        aria-label="View Neural Style Transfer"></a>
+                </div>
+                <div class="project">
+                    <h3>Distributed KV Store</h3>
+                    <p>High-performance key-value store in Zig</p><a href="https://github.com/nandishwarsingh/kv-store"
+                        aria-label="View Distributed KV Store"></a>
+                </div>
+                <div class="project">
+                    <h3>Code Compiler</h3>
+                    <p>LLVM-based compiler for a custom language in C++</p><a
+                        href="https://github.com/nandishwarsingh/compiler" aria-label="View Code Compiler"></a>
+                </div>
+            </div>
+        </section>
+        <section>
+            <h2>Tools</h2>
+            <div class="tools"><span class="tool">C++</span><span class="tool">Zig</span><span
+                    class="tool">JavaScript</span><span class="tool">Python</span><span class="tool">React</span><span
+                    class="tool">Node.js</span><span class="tool">MongoDB</span><span class="tool">PyTorch</span></div>
+        </section>
+        <nav aria-label="Links"><a href="https://github.com/nandishwarsingh">GitHub</a><a href="tools.html">Tools</a><a
+                href="mailto:hello@nandishwarsingh.com">Email</a></nav>
+        <footer class="footer"><span class="status">Building something new</span><span>© 2025</span></footer>
+    </div>
+    <script>document.getElementById('themeToggle').onclick = () => { document.documentElement.classList.toggle('dark'); localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light') }</script>
+</body>
+
+</html>
