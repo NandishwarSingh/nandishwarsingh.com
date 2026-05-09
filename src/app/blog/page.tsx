@@ -142,7 +142,7 @@ export default async function BlogIndexPage({ searchParams }: BlogPageProps) {
           {list.map((p) => (
             <li key={p.slug}>
               <Link
-                href={`/blog/${p.slug}`}
+                href={page > 1 ? `/blog/${p.slug}?page=${page}` : `/blog/${p.slug}`}
                 className="group block"
                 aria-label={p.title}
               >

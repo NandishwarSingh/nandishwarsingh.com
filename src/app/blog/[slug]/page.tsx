@@ -60,12 +60,19 @@ export default async function BlogPostPage({
   searchParams,
 }: {
   params: Promise<Params>
-  searchParams: Promise<{ from?: string | string[] }>
+  searchParams: Promise<{ from?: string | string[]; page?: string | string[] }>
 }) {
   const { slug } = await params
-  const { from } = await searchParams
-  const fromHome = (Array.isArray(from) ? from[0] : from) === "home"
-  const backHref = fromHome ? "/" : "/blog"
+  const sp = await searchParams
+  const fromHome = (Array.isArray(sp.from) ? sp.from[0] : sp.from) === "home"
+  const pageRaw = Array.isArray(sp.page) ? sp.page[0] : sp.page
+  const pageNum = Number.parseInt(pageRaw ?? "", 10)
+  const fromPage = Number.isFinite(pageNum) && pageNum > 1 ? pageNum : null
+  const backHref = fromHome
+    ? "/"
+    : fromPage
+      ? `/blog?page=${fromPage}`
+      : "/blog"
   const backLabel = fromHome ? "Back to home" : "Back to all posts"
   const ps = await posts()
   const p = await ps.findOne({ slug, status: "published" })
