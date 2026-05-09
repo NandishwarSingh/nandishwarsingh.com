@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import Link from "next/link"
 import { ArrowLeft, ArrowRight, ArrowUpRight, BookOpen, Calendar } from "lucide-react"
 import { Card } from "@/components/ui/card"
@@ -10,45 +11,6 @@ export const dynamic = "force-dynamic"
 const SITE_ORIGIN = SITE.origin
 const PAGE_SIZE = 4
 
-export const metadata = {
-  title: "Blog — Nandishwar Singh",
-  description:
-    "Notes, write-ups, and walkthroughs by Nandishwar Singh on shipping software, side projects, and the stack behind nandishwarsingh.com.",
-  keywords: [
-    "Nandishwar Singh blog",
-    "engineering blog",
-    "Next.js write-ups",
-    "side project notes",
-    "yt-dlp tutorials",
-    "QR analytics",
-  ],
-  alternates: {
-    canonical: `${SITE_ORIGIN}/blog`,
-    types: {
-      "application/atom+xml": [
-        { url: "/blog/feed.xml", title: "Nandishwar Singh — Blog" },
-      ],
-      "application/rss+xml": [
-        { url: "/blog/feed.xml", title: "Nandishwar Singh — Blog" },
-      ],
-    },
-  },
-  openGraph: {
-    title: "Blog — Nandishwar Singh",
-    description:
-      "Notes, write-ups, and walkthroughs from a software engineer who ships side projects.",
-    url: `${SITE_ORIGIN}/blog`,
-    type: "website",
-    siteName: SITE.name,
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Blog — Nandishwar Singh",
-    description:
-      "Notes, write-ups, and walkthroughs from a software engineer who ships side projects.",
-  },
-}
-
 type BlogPageProps = {
   searchParams: Promise<{ page?: string | string[] }>
 }
@@ -57,6 +19,52 @@ function parsePage(raw: string | string[] | undefined): number {
   const v = Array.isArray(raw) ? raw[0] : raw
   const n = Number.parseInt(v ?? "1", 10)
   return Number.isFinite(n) && n > 0 ? n : 1
+}
+
+export async function generateMetadata({
+  searchParams,
+}: BlogPageProps): Promise<Metadata> {
+  const page = parsePage((await searchParams).page)
+  const canonicalPath = page > 1 ? `/blog?page=${page}` : "/blog"
+  const titleSuffix = page > 1 ? ` (page ${page})` : ""
+  return {
+    title: `Blog${titleSuffix} — Nandishwar Singh`,
+    description:
+      "Notes, write-ups, and walkthroughs by Nandishwar Singh on shipping software, side projects, and the stack behind nandishwarsingh.com.",
+    keywords: [
+      "Nandishwar Singh blog",
+      "engineering blog",
+      "Next.js write-ups",
+      "side project notes",
+      "yt-dlp tutorials",
+      "QR analytics",
+    ],
+    alternates: {
+      canonical: `${SITE_ORIGIN}${canonicalPath}`,
+      types: {
+        "application/atom+xml": [
+          { url: "/blog/feed.xml", title: "Nandishwar Singh — Blog" },
+        ],
+        "application/rss+xml": [
+          { url: "/blog/feed.xml", title: "Nandishwar Singh — Blog" },
+        ],
+      },
+    },
+    openGraph: {
+      title: `Blog${titleSuffix} — Nandishwar Singh`,
+      description:
+        "Notes, write-ups, and walkthroughs from a software engineer who ships side projects.",
+      url: `${SITE_ORIGIN}${canonicalPath}`,
+      type: "website",
+      siteName: SITE.name,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `Blog${titleSuffix} — Nandishwar Singh`,
+      description:
+        "Notes, write-ups, and walkthroughs from a software engineer who ships side projects.",
+    },
+  }
 }
 
 export default async function BlogIndexPage({ searchParams }: BlogPageProps) {
