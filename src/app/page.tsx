@@ -118,7 +118,7 @@ export default function Home() {
 
           <div className="flex min-w-0 flex-col gap-7">
             <MotionFade delay={0.04}>
-              <MyBlogsSection variant="stack" limit={5} />
+              <MyBlogsSection variant="stack" limit={4} />
             </MotionFade>
 
             <MotionFade delay={0.16}>
