@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { ArrowUpRight, BookOpen, Calendar } from "lucide-react"
+import { ArrowLeft, ArrowRight, ArrowUpRight, BookOpen, Calendar } from "lucide-react"
 import { Card } from "@/components/ui/card"
 import { posts } from "@/lib/db"
 import { JsonLd } from "@/components/seo/JsonLd"
@@ -8,6 +8,7 @@ import { PERSON, SITE, WEBSITE } from "@/lib/site"
 export const dynamic = "force-dynamic"
 
 const SITE_ORIGIN = SITE.origin
+const PAGE_SIZE = 4
 
 export const metadata = {
   title: "Blog — Nandishwar Singh",
@@ -48,18 +49,33 @@ export const metadata = {
   },
 }
 
-export default async function BlogIndexPage() {
+type BlogPageProps = {
+  searchParams: Promise<{ page?: string | string[] }>
+}
+
+function parsePage(raw: string | string[] | undefined): number {
+  const v = Array.isArray(raw) ? raw[0] : raw
+  const n = Number.parseInt(v ?? "1", 10)
+  return Number.isFinite(n) && n > 0 ? n : 1
+}
+
+export default async function BlogIndexPage({ searchParams }: BlogPageProps) {
   const ps = await posts()
+  const filter = { status: "published" as const }
+  const total = await ps.countDocuments(filter)
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
+  const requested = parsePage((await searchParams).page)
+  const page = Math.min(requested, totalPages)
+  const skip = (page - 1) * PAGE_SIZE
   const list = await ps
-    .find(
-      { status: "published" },
-      {
-        projection: { body: 0 },
-      }
-    )
+    .find(filter, { projection: { body: 0 } })
     .sort({ publishedAt: -1 })
-    .limit(50)
+    .skip(skip)
+    .limit(PAGE_SIZE)
     .toArray()
+  const hasPrev = page > 1
+  const hasNext = page < totalPages
+  const pageHref = (n: number) => (n <= 1 ? "/blog" : `/blog?page=${n}`)
 
   const blogJsonLd = {
     "@context": "https://schema.org",
@@ -180,6 +196,47 @@ export default async function BlogIndexPage() {
             </li>
           ))}
         </ul>
+      )}
+
+      {totalPages > 1 && (
+        <nav
+          className="flex items-center justify-between gap-3 pt-2 text-xs text-muted-foreground"
+          aria-label="Blog pagination"
+        >
+          {hasPrev ? (
+            <Link
+              href={pageHref(page - 1)}
+              rel="prev"
+              className="inline-flex items-center gap-1 rounded-full border border-border/60 bg-background/40 px-3 py-1 transition-colors hover:text-foreground"
+            >
+              <ArrowLeft className="size-3.5" />
+              Previous
+            </Link>
+          ) : (
+            <span className="inline-flex items-center gap-1 rounded-full border border-border/40 bg-background/20 px-3 py-1 opacity-50">
+              <ArrowLeft className="size-3.5" />
+              Previous
+            </span>
+          )}
+          <span aria-live="polite">
+            Page {page} of {totalPages}
+          </span>
+          {hasNext ? (
+            <Link
+              href={pageHref(page + 1)}
+              rel="next"
+              className="inline-flex items-center gap-1 rounded-full border border-border/60 bg-background/40 px-3 py-1 transition-colors hover:text-foreground"
+            >
+              Next
+              <ArrowRight className="size-3.5" />
+            </Link>
+          ) : (
+            <span className="inline-flex items-center gap-1 rounded-full border border-border/40 bg-background/20 px-3 py-1 opacity-50">
+              Next
+              <ArrowRight className="size-3.5" />
+            </span>
+          )}
+        </nav>
       )}
 
       <footer className="flex justify-between pt-2 text-[11px] text-muted-foreground">
