@@ -68,7 +68,7 @@ export async function MyBlogsSection({
           {list.map((p) => {
             const minutes = readingTimeMinutes(p.body ?? "")
             return (
-              <Link key={p.slug} href={`/blog/${p.slug}`} className="group">
+              <Link key={p.slug} href={`/blog/${p.slug}?from=home`} className="group">
                 <Card
                   className={
                     variant === "stack"

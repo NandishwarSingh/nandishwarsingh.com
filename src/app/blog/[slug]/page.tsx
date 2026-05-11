@@ -57,10 +57,16 @@ export async function generateMetadata({
 
 export default async function BlogPostPage({
   params,
+  searchParams,
 }: {
   params: Promise<Params>
+  searchParams: Promise<{ from?: string | string[] }>
 }) {
   const { slug } = await params
+  const { from } = await searchParams
+  const fromHome = (Array.isArray(from) ? from[0] : from) === "home"
+  const backHref = fromHome ? "/" : "/blog"
+  const backLabel = fromHome ? "Back to home" : "Back to all posts"
   const ps = await posts()
   const p = await ps.findOne({ slug, status: "published" })
   if (!p) notFound()
@@ -170,11 +176,11 @@ export default async function BlogPostPage({
 
       <nav className="flex items-center gap-3 text-xs text-muted-foreground">
         <Link
-          href="/blog"
+          href={backHref}
           className="inline-flex items-center gap-1.5 transition-colors hover:text-foreground"
         >
           <ArrowLeft className="size-3.5" />
-          Back to all posts
+          {backLabel}
         </Link>
       </nav>
 
@@ -282,11 +288,11 @@ export default async function BlogPostPage({
           <span className="text-foreground">{p.author}</span>
         </span>
         <Link
-          href="/blog"
+          href={backHref}
           className="inline-flex items-center gap-1.5 transition-colors hover:text-foreground"
         >
           <ArrowLeft className="size-3.5" />
-          Back to all posts
+          {backLabel}
         </Link>
       </footer>
     </main>
