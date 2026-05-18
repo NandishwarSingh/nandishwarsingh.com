@@ -1,4 +1,4 @@
-import { QrCode, Film, Newspaper, type LucideIcon } from "lucide-react"
+import { QrCode, Film, Newspaper, Clapperboard, type LucideIcon } from "lucide-react"
 
 export type ToolStatus = "shipped" | "in-progress" | "planned"
 
@@ -20,6 +20,18 @@ export type Tool = {
 }
 
 export const TOOLS: Tool[] = [
+  {
+    slug: "chitra",
+    name: "Chitra",
+    tagline: "Browser-native AI video editor",
+    description:
+      "Multi-track timeline editor that runs entirely in the browser \u2014 WebGPU preview, FFmpeg.wasm MP4 export, chat-driven edits. No upload, no sign-up.",
+    icon: Clapperboard,
+    status: "shipped",
+    accent: "#d8c4f0",
+    href: "/chitra/",
+    repo: "https://github.com/NandishwarSingh/chitra-video-editor",
+  },
   {
     slug: "qr",
     name: "QR Studio",

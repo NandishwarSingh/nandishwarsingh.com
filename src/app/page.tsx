@@ -149,6 +149,27 @@ export default function Home() {
             </MotionFade>
 
             <MotionFade delay={0.20}>
+              <section aria-labelledby="experiments-heading" className="flex flex-col gap-3">
+                <div className="flex items-baseline justify-between">
+                  <div className="flex items-center gap-2">
+                    <span aria-hidden className="size-1.5 rounded-full bg-emerald-400 shadow-[0_0_10px_oklch(0.7_0.18_152)]" />
+                    <h2
+                      id="experiments-heading"
+                      className="text-[11px] font-medium uppercase tracking-[0.16em] text-muted-foreground"
+                    >
+                      Experiments
+                    </h2>
+                  </div>
+                  <span className="text-[10px] text-muted-foreground/70">live R&amp;D</span>
+                </div>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  {EXPERIMENTS.map((tool) => (
+                    <ToolCard key={tool.slug} tool={tool} />
+                  ))}
+                </div>
+              </section>
+            </MotionFade>
+            <MotionFade delay={0.24}>
               <section aria-labelledby="news-heading" className="flex flex-col gap-3">
                 <div className="flex items-baseline justify-between">
                   <div className="flex items-center gap-2">
@@ -170,27 +191,6 @@ export default function Home() {
               </section>
             </MotionFade>
 
-            <MotionFade delay={0.24}>
-              <section aria-labelledby="experiments-heading" className="flex flex-col gap-3">
-                <div className="flex items-baseline justify-between">
-                  <div className="flex items-center gap-2">
-                    <span aria-hidden className="size-1.5 rounded-full bg-emerald-400 shadow-[0_0_10px_oklch(0.7_0.18_152)]" />
-                    <h2
-                      id="experiments-heading"
-                      className="text-[11px] font-medium uppercase tracking-[0.16em] text-muted-foreground"
-                    >
-                      Experiments
-                    </h2>
-                  </div>
-                  <span className="text-[10px] text-muted-foreground/70">live R&amp;D</span>
-                </div>
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  {EXPERIMENTS.map((tool) => (
-                    <ToolCard key={tool.slug} tool={tool} />
-                  ))}
-                </div>
-              </section>
-            </MotionFade>
           </div>
 
           <SideRight />
