@@ -170,101 +170,174 @@ function shape(
 }
 
 /** READ benchmark — N genuine GETs; reports nDB's engine-measured latency. */
-export async function ndbBench(n: number, keyPrefixes: string[]) {
-  const N = Math.max(50, Math.min(n, 5000))
-  const before = await ndbStats()
-  const e2e: number[] = []
+const CAP = 100_000
+
+function buildFrame(type: number, payload: string): Buffer {
+  const body = Buffer.from(payload, "utf8")
+  const h = Buffer.alloc(5)
+  h[0] = type
+  h.writeUInt32BE(body.length, 1)
+  return Buffer.concat([h, body])
+}
+
+/** Pipeline `frames` over ONE socket and resolve when all responses are
+ *  back. Returns wall-clock ms. Backpressure-aware so 100k frames don't
+ *  overrun the kernel buffer. */
+const PIPE_BATCH = 2000
+
+/** Pipeline one batch of frames over a single fresh socket. */
+function pipelineBatch(frames: Buffer[], timeoutMs: number): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const sock = net.connect(PORT, HOST)
+    let acked = 0
+    let buf = Buffer.alloc(0)
+    const total = frames.length
+    const timer = setTimeout(() => {
+      sock.destroy()
+      reject(new Error("nDB pipeline timeout"))
+    }, timeoutMs)
+    sock.on("connect", async () => {
+      for (const f of frames) {
+        if (!sock.write(f)) {
+          await new Promise((res) => sock.once("drain", res))
+        }
+      }
+    })
+    sock.on("error", (e) => {
+      clearTimeout(timer)
+      reject(e)
+    })
+    sock.on("data", (d) => {
+      buf = Buffer.concat([buf, d])
+      while (buf.length >= 5) {
+        const len = buf.readUInt32BE(1)
+        if (buf.length < 5 + len) break
+        buf = buf.subarray(5 + len)
+        if (++acked === total) {
+          clearTimeout(timer)
+          sock.end()
+          resolve()
+          return
+        }
+      }
+    })
+  })
+}
+
+/** Run all frames in sequential per-connection batches so nDB's
+ *  per-connection in-flight cap never resets the stream. Returns total
+ *  wall-clock ms. */
+async function pipelineRun(frames: Buffer[]): Promise<number> {
   const t0 = Date.now()
+  for (let i = 0; i < frames.length; i += PIPE_BATCH) {
+    const batch = frames.slice(i, i + PIPE_BATCH)
+    // generous per-batch timeout; 2k ops is sub-second on the engine
+    await pipelineBatch(batch, 30_000)
+  }
+  return Date.now() - t0
+}
+/** READ benchmark — N pipelined GETs; reports nDB engine-measured latency. */
+export async function ndbBench(n: number, keyPrefixes: string[]) {
+  const N = Math.max(50, Math.min(n, CAP))
+  const frames: Buffer[] = []
   for (let i = 0; i < N; i++) {
     const pfx = keyPrefixes[i % keyPrefixes.length]
     const idx = 1 + ((i * 7919) % 9999)
-    try {
-      const { rttUs } = await ndbGet(`${pfx}:${idx}`)
-      e2e.push(rttUs)
-    } catch {
-      /* skip */
-    }
+    frames.push(buildFrame(MSG_GET, JSON.stringify({ key: `${pfx}:${idx}` })))
   }
-  const wallMs = Date.now() - t0
+  const before = await ndbStats()
+  const wallMs = await pipelineRun(frames)
   const after = await ndbStats()
-  return shape(
-    "read",
-    e2e.length,
-    e2e.length,
-    0,
-    wallMs,
-    e2e,
-    { get: before.get_latency, put: before.put_latency },
-    { get: after.get_latency, put: after.put_latency }
-  )
+  return shapeP("read", N, N, 0, wallMs, before, after)
 }
 
-/** WRITE benchmark — N genuine PUTs into a dedicated bench:* keyspace. */
+/** WRITE benchmark — N pipelined PUTs into a dedicated bench:* keyspace. */
 export async function ndbBenchWrite(n: number) {
-  const N = Math.max(50, Math.min(n, 5000))
-  const before = await ndbStats()
-  const e2e: number[] = []
-  const t0 = Date.now()
+  const N = Math.max(50, Math.min(n, CAP))
+  const frames: Buffer[] = []
   for (let i = 0; i < N; i++) {
-    try {
-      const { rttUs } = await ndbPut(
-        `bench:${i}`,
-        `ts=${Date.now()}|i=${i}|pad=${"x".repeat(40)}`
+    frames.push(
+      buildFrame(
+        MSG_PUT,
+        JSON.stringify({
+          key: `bench:${i}`,
+          value: `ts=${Date.now()}|i=${i}|pad=${"x".repeat(40)}`,
+        })
       )
-      e2e.push(rttUs)
-    } catch {
-      /* skip */
-    }
+    )
   }
-  const wallMs = Date.now() - t0
+  const before = await ndbStats()
+  const wallMs = await pipelineRun(frames)
   const after = await ndbStats()
-  return shape(
-    "write",
-    e2e.length,
-    0,
-    e2e.length,
-    wallMs,
-    e2e,
-    { get: before.get_latency, put: before.put_latency },
-    { get: after.get_latency, put: after.put_latency }
-  )
+  return shapeP("write", N, 0, N, wallMs, before, after)
 }
 
-/** MIXED benchmark — ~80% GET / 20% PUT. */
+/** MIXED benchmark — ~80% GET / 20% PUT, pipelined. */
 export async function ndbBenchMixed(n: number, keyPrefixes: string[]) {
-  const N = Math.max(50, Math.min(n, 5000))
-  const before = await ndbStats()
-  const e2e: number[] = []
+  const N = Math.max(50, Math.min(n, CAP))
+  const frames: Buffer[] = []
   let reads = 0
   let writes = 0
-  const t0 = Date.now()
   for (let i = 0; i < N; i++) {
-    try {
-      if (i % 5 === 0) {
-        const { rttUs } = await ndbPut(`bench:mix:${i}`, `ts=${Date.now()}|i=${i}`)
-        e2e.push(rttUs)
-        writes++
-      } else {
-        const pfx = keyPrefixes[i % keyPrefixes.length]
-        const idx = 1 + ((i * 7919) % 9999)
-        const { rttUs } = await ndbGet(`${pfx}:${idx}`)
-        e2e.push(rttUs)
-        reads++
-      }
-    } catch {
-      /* skip */
+    if (i % 5 === 0) {
+      frames.push(
+        buildFrame(
+          MSG_PUT,
+          JSON.stringify({ key: `bench:mix:${i}`, value: `ts=${Date.now()}|i=${i}` })
+        )
+      )
+      writes++
+    } else {
+      const pfx = keyPrefixes[i % keyPrefixes.length]
+      const idx = 1 + ((i * 7919) % 9999)
+      frames.push(buildFrame(MSG_GET, JSON.stringify({ key: `${pfx}:${idx}` })))
+      reads++
     }
   }
-  const wallMs = Date.now() - t0
+  const before = await ndbStats()
+  const wallMs = await pipelineRun(frames)
   const after = await ndbStats()
-  return shape(
-    "mixed",
-    e2e.length,
+  return shapeP("mixed", N, reads, writes, wallMs, before, after)
+}
+
+/** Build the response from STATS deltas (engine-measured) + pipelined wall. */
+function shapeP(
+  kind: string,
+  reqs: number,
+  reads: number,
+  writes: number,
+  wallMs: number,
+  before: { get_latency?: NdbLatency; put_latency?: NdbLatency },
+  after: { get_latency?: NdbLatency; put_latency?: NdbLatency }
+) {
+  const gAvg = windowAvg(snap(before.get_latency), snap(after.get_latency))
+  const pAvg = windowAvg(snap(before.put_latency), snap(after.put_latency))
+  let engAvg: number
+  if (kind === "write") engAvg = pAvg
+  else if (kind === "mixed")
+    engAvg =
+      reads + writes > 0 ? (gAvg * reads + pAvg * writes) / (reads + writes) : gAvg
+  else engAvg = gAvg
+  const dist = kind === "write" ? after.put_latency : after.get_latency
+  return {
+    kind,
+    requests: reqs,
     reads,
     writes,
-    wallMs,
-    e2e,
-    { get: before.get_latency, put: before.put_latency },
-    { get: after.get_latency, put: after.put_latency }
-  )
+    wall_ms: wallMs,
+    engine: {
+      avg_us: Math.round(engAvg * 100) / 100,
+      ops_per_sec: engAvg > 0 ? Math.round(1_000_000 / engAvg) : 0,
+      p50_us: dist?.p50_us ?? 0,
+      p95_us: dist?.p95_us ?? 0,
+      p99_us: dist?.p99_us ?? 0,
+      p999_us: dist?.p999_us ?? 0,
+    },
+    // Pipelined client throughput over one socket (real, includes framing):
+    e2e: {
+      ops_per_sec: wallMs > 0 ? Math.round((reqs / wallMs) * 1000) : 0,
+      p50_us: 0,
+      p99_us: 0,
+    },
+  }
 }

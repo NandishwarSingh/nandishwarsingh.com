@@ -140,7 +140,7 @@ function Benchmark() {
             Requests
           </div>
           <div className="flex flex-wrap gap-2">
-            {[500, 1000, 2500, 5000].map((x) => (
+            {[500, 1000, 5000, 100000].map((x) => (
               <Button
                 key={x}
                 size="sm"
@@ -148,7 +148,7 @@ function Benchmark() {
                 disabled={running}
                 onClick={() => setN(x)}
               >
-                {x.toLocaleString()}
+                {x >= 100000 ? "100k" : x.toLocaleString()}
               </Button>
             ))}
           </div>

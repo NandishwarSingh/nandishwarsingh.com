@@ -11,6 +11,7 @@ import {
 
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
+export const maxDuration = 120
 
 const PREFIXES = ["user", "event", "order", "metric", "session"]
 
@@ -84,15 +85,15 @@ export async function GET(req: Request) {
     }
 
     if (op === "bench") {
-      const n = Math.max(50, Math.min(Number(u.searchParams.get("n") || 800), 5000))
+      const n = Math.max(50, Math.min(Number(u.searchParams.get("n") || 800), 100000))
       return json({ ok: true, bench: await ndbBench(n, PREFIXES) })
     }
     if (op === "benchwrite") {
-      const n = Math.max(50, Math.min(Number(u.searchParams.get("n") || 800), 5000))
+      const n = Math.max(50, Math.min(Number(u.searchParams.get("n") || 800), 100000))
       return json({ ok: true, bench: await ndbBenchWrite(n) })
     }
     if (op === "benchmix") {
-      const n = Math.max(50, Math.min(Number(u.searchParams.get("n") || 800), 5000))
+      const n = Math.max(50, Math.min(Number(u.searchParams.get("n") || 800), 100000))
       return json({ ok: true, bench: await ndbBenchMixed(n, PREFIXES) })
     }
 
