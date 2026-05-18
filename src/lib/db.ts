@@ -92,6 +92,8 @@ export type Post = {
   body: string
   coverImage?: string
   tags: string[]
+  /** owner/name of the GitHub repo this autoblog post was generated from. */
+  sourceRepo?: string
   status: "draft" | "published"
   author: string
   publishedAt?: Date

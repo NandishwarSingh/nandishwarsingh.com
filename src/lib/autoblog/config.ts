@@ -10,9 +10,12 @@ export const AUTOBLOG = {
   },
 
   limits: {
-    writerMaxOutputTokens: 8_000,
+    writerMaxOutputTokens: 12_000,
     lockTtlMinutes: 15,
     dedupWindowDays: 30,
+    // A repo will not be blogged again until this many days after its
+    // last autoblog post — prevents near-duplicate 'this week in X' spam.
+    repoCooldownDays: 6,
   },
 
   apiKey: process.env.OPENROUTER_API_KEY ?? "",

@@ -1,4 +1,4 @@
-import { QrCode, Film, Newspaper, Clapperboard, type LucideIcon } from "lucide-react"
+import { QrCode, Film, Newspaper, Clapperboard, Database, type LucideIcon } from "lucide-react"
 
 export type ToolStatus = "shipped" | "in-progress" | "planned"
 
@@ -45,6 +45,18 @@ export const TOOLS: Tool[] = [
 ]
 
 export const EXPERIMENTS: Tool[] = [
+  {
+    slug: "nDB",
+    name: "nDB",
+    tagline: "LSM-tree storage engine in C",
+    description:
+      "A write-optimized database engine written from scratch in C \u2014 WAL crash recovery, bloom filters, dual-memtable stall prevention, background compaction, binary TCP protocol, SQL and blob storage. Zero dependencies.",
+    icon: Database,
+    status: "shipped",
+    accent: "#86efac",
+    href: "/nDB",
+    repo: "https://github.com/NandishwarSingh/nDB",
+  },
   {
     slug: "nvc",
     name: "NVC Studio",

@@ -13,8 +13,11 @@ export type RunResult =
 
 const SYSTEM_PROMPT = `You are Nandishwar Singh writing a long-form post on his personal engineering blog. Builder voice — direct, opinionated, specific. No corporate fluff, no filler intros. Concrete examples and code snippets where they help. Markdown only. Length: 1500-2500 words.`
 
-const WRITER_USER_TEMPLATE = (topic: string) =>
-  `Write a blog post on this topic: "${topic}"
+const WRITER_USER_TEMPLATE = (topic: string, context?: string) => {
+  const contextBlock = context
+    ? `\n\nGround the post in this real context (do not invent facts beyond what is given here — paraphrase, expand, and add general engineering insight, but the concrete claims must trace back to this):\n\n${context}\n`
+    : ""
+  return `Write a blog post on this topic: "${topic}"${contextBlock}
 
 Output strict JSON only with this exact shape (no prose, no code fences around the JSON):
 
@@ -25,6 +28,7 @@ Output strict JSON only with this exact shape (no prose, no code fences around t
   "tags": ["<3 to 6 tags, lowercase, no spaces>"],
   "body": "<markdown body, 1500-2500 words, with sections and code>"
 }`
+}
 
 function safeJsonParse(s: string): Record<string, unknown> | null {
   const cleaned = s.replace(/^```(?:json)?\s*|```\s*$/g, "").trim()
@@ -79,11 +83,43 @@ async function pickTopic(recentTitles: string[]): Promise<string | null> {
   return candidates[Math.floor(Math.random() * candidates.length)]
 }
 
-export async function runAutoblog(): Promise<RunResult> {
+/**
+ * Gemini sometimes returns JSON where string fields are double-escaped:
+ * "# Title\\n\\nParagraph". After JSON.parse the body becomes a JS string
+ * containing the literal two-character sequence backslash + n (not a real
+ * newline), and the markdown renderer turns it into one giant single line.
+ * Detect and fix that.
+ */
+function unescapeIfDoubleEscaped(s: string): string {
+  if (typeof s !== "string") return s
+  const literalNewlines = (s.match(/\\n/g) || []).length
+  const realNewlines = (s.match(/\n/g) || []).length
+  if (literalNewlines >= 4 && realNewlines < 3) {
+    return s
+      .replace(/\\r\\n/g, "\n")
+      .replace(/\\n/g, "\n")
+      .replace(/\\t/g, "\t")
+      .replace(/\\"/g, "\"")
+      .replace(/\\\\/g, "\\")
+  }
+  return s
+}
+
+export type AutoblogOverride = {
+  topic?: string
+  contextSummary?: string
+  skipLock?: boolean
+  /** owner/name of the GitHub repo this run is about. Stored on the post. */
+  sourceRepo?: string
+}
+
+export async function runAutoblog(
+  override: AutoblogOverride = {}
+): Promise<RunResult> {
   const runs = await autoblogRuns()
   const ps = await posts()
 
-  const got = await acquireLock()
+  const got = override.skipLock ? true : await acquireLock()
   if (!got) {
     const r = await runs.insertOne({
       startedAt: new Date(),
@@ -121,7 +157,7 @@ export async function runAutoblog(): Promise<RunResult> {
       .limit(60)
       .toArray()
 
-    const topic = await pickTopic(recent.map((p) => p.title))
+    const topic = override.topic ?? (await pickTopic(recent.map((p) => p.title)))
     if (!topic) {
       await runs.updateOne(
         { _id: runId },
@@ -137,42 +173,75 @@ export async function runAutoblog(): Promise<RunResult> {
       return { ok: false, runId: runId.toString(), reason: "all topics covered recently" }
     }
 
-    const writerResp = await callChat({
-      model: AUTOBLOG.models.writer,
-      messages: [
-        { role: "system", content: SYSTEM_PROMPT },
-        { role: "user", content: WRITER_USER_TEMPLATE(topic) },
-      ],
-      max_tokens: AUTOBLOG.limits.writerMaxOutputTokens,
-      temperature: 0.7,
-      response_format: { type: "json_object" },
-    })
+    // Up to 2 attempts. Failure mode is almost always JSON truncated at the
+    // token cap for verbose repos, so attempt 2 doubles the cap and adds a
+    // terse compliance nudge.
+    const WRITER_ATTEMPTS = 2
+    let writerResp: Awaited<ReturnType<typeof callChat>> | null = null
+    let raw = ""
+    let parsed: Record<string, unknown> | null = null
+    for (let attempt = 1; attempt <= WRITER_ATTEMPTS; attempt++) {
+      const maxTokens =
+        attempt === 1
+          ? AUTOBLOG.limits.writerMaxOutputTokens
+          : AUTOBLOG.limits.writerMaxOutputTokens * 2
+      const messages = [
+        { role: "system" as const, content: SYSTEM_PROMPT },
+        {
+          role: "user" as const,
+          content: WRITER_USER_TEMPLATE(topic, override.contextSummary),
+        },
+      ]
+      if (attempt > 1) {
+        messages.push({
+          role: "user" as const,
+          content:
+            "Your previous response was not parseable as a single complete JSON object. Reply with ONLY the JSON object — no prose, no markdown fences, and ensure it is complete and closed.",
+        })
+      }
+      writerResp = await callChat({
+        model: AUTOBLOG.models.writer,
+        messages,
+        max_tokens: maxTokens,
+        temperature: 0.7,
+        response_format: { type: "json_object" },
+      })
+      raw = extractText(writerResp)
+      parsed = safeJsonParse(raw)
+      const okShape =
+        parsed &&
+        typeof parsed.title === "string" &&
+        typeof parsed.body === "string" &&
+        (parsed.body as string).length >= 400
+      if (okShape) break
+      if (attempt === WRITER_ATTEMPTS) {
+        await runs.updateOne(
+          { _id: runId },
+          {
+            $set: {
+              finishedAt: new Date(),
+              status: "error",
+              topic,
+              errorMessage: `Writer output invalid after ${WRITER_ATTEMPTS} attempts`,
+              debug: { writerRaw: raw.slice(0, 4000) },
+            },
+          }
+        )
+        return { ok: false, runId: runId.toString(), reason: "invalid writer output" }
+      }
+    }
 
-    const raw = extractText(writerResp)
-    const parsed = safeJsonParse(raw)
+    // The retry loop returns on terminal failure, so parsed is non-null
+    // here. This explicit guard narrows the type for the compiler.
     if (
       !parsed ||
       typeof parsed.title !== "string" ||
-      typeof parsed.body !== "string" ||
-      parsed.body.length < 400
+      typeof parsed.body !== "string"
     ) {
-      await runs.updateOne(
-        { _id: runId },
-        {
-          $set: {
-            finishedAt: new Date(),
-            status: "error",
-            topic,
-            errorMessage: "Writer output was not valid JSON or too short",
-            debug: { writerRaw: raw.slice(0, 4000) },
-          },
-        }
-      )
       return { ok: false, runId: runId.toString(), reason: "invalid writer output" }
     }
-
-    const title = (parsed.title as string).slice(0, 110).trim()
-    const summary = (
+    const title = unescapeIfDoubleEscaped(parsed.title as string).slice(0, 110).trim()
+    const summary = unescapeIfDoubleEscaped(
       typeof parsed.summary === "string" ? parsed.summary : title
     )
       .slice(0, 220)
@@ -205,7 +274,7 @@ export async function runAutoblog(): Promise<RunResult> {
       slug,
       title,
       summary,
-      body: parsed.body as string,
+      body: unescapeIfDoubleEscaped(parsed.body as string),
       tags,
       status,
       author: process.env.SITE_AUTHOR ?? "Nandishwar Singh",
@@ -214,6 +283,7 @@ export async function runAutoblog(): Promise<RunResult> {
       updatedAt: now,
       seo: { keywords: tags },
       views: 0,
+      sourceRepo: override.sourceRepo,
     }
     await ps.insertOne(post)
 
@@ -234,8 +304,8 @@ export async function runAutoblog(): Promise<RunResult> {
           topic,
           postSlug: slug,
           writer: {
-            model: writerResp.model ?? AUTOBLOG.models.writer,
-            tokens: writerResp.usage?.total_tokens,
+            model: writerResp?.model ?? AUTOBLOG.models.writer,
+            tokens: writerResp?.usage?.total_tokens,
           },
         },
       }
@@ -259,7 +329,7 @@ export async function runAutoblog(): Promise<RunResult> {
       reason: err instanceof Error ? err.message : "unknown error",
     }
   } finally {
-    await releaseLock()
+    if (!override.skipLock) await releaseLock()
   }
 }
 
